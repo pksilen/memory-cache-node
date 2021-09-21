@@ -14,5 +14,3 @@ F
 .sonarcloud.properties,8/c/8c2ee9288b17817bf601b83cde380a0086a67745
 D
 .circleci/config.yml,f/d/fd5da61396a8376845bee5cdf71aaf3c98a888ae
-<
-package.json,7/0/7030d0b2f71b999ff89a343de08c414af32fc93a

@@ -1,7 +1,7 @@
 {
   "name": "memory-cache-node",
-  "version": "1.6.4",
-  "description": "Fast, modern and event loop non-blocking memory cache for Node and browse",
+  "version": "1.0.0",
+  "description": "Fast, modern and event loop non-blocking memory cache for Node.js and browse",
   "author": {
     "name": "Petri Silen",
     "email": "petri.silen@silensoft.com"
