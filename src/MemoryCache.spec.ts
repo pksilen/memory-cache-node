@@ -121,7 +121,7 @@ describe('MemoryCache', () => {
       jest.useRealTimers();
     });
     it('it is idempotent', () => {
-      const memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache = new MemoryCache<string, number>(1, 10);
       memoryCache.clear();
       memoryCache.clear();
     });
