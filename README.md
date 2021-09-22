@@ -27,6 +27,103 @@ npm install --save memory-cache-node
 
 ## <a name="usage"></a> Usage
 
+### Creating a memory cache
+Below example creates a memory cache for items which has string keys and number values. 
+Memory cache checks expiring items every 600 seconds (i.e. every 10 minutes) 
+The maximum number of items in the cache is 1 million.
+
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const itemsExpirationCheckIntervalInSecs = 10 * 60;
+const maxItemCount = 1000000;
+const memoryCache = new MemoryCache<string, number>(itemsExpirationCheckIntervalInSecs, maxItemCount);
+```
+
+### Storing items in the memory cache
+Below example stores a permanent item in the memory cache with key `key1` and stores an expiring item with key 
+`key2`. The latter item expires earliest after 30 minutes.
+
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const memoryCache = new MemoryCache<string, number>(600, 1000000);
+memoryCache.storePermanentItem('key1', 1);
+
+const timeToLiveInSecs = 30 * 60;
+memoryCache.storeExpiringItem('key2', 2, timeToLiveInSecs);
+```
+
+### Getting the number of items in the memory cache
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const memoryCache = new MemoryCache<string, number>(600, 1000000);
+memoryCache.storePermanentItem('key1', 1);
+
+const timeToLiveInSecs = 30 * 60;
+memoryCache.storeExpiringItem('key2', 2, timeToLiveInSecs);
+console.log(memoryCache.getItemCount()); // Logs to console: 2
+```
+
+### Checking if item exists in the memory cache
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const memoryCache = new MemoryCache<string, number>(600, 1000000);
+memoryCache.storePermanentItem('key1', 1);
+
+console.log(memoryCache.hasItem('key1')); // Logs to console: true
+console.log(memoryCache.hasItem('notFound')); // Logs to console: false
+```
+
+### Retrieving the value of an item in the memory cache
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const memoryCache = new MemoryCache<string, number>(600, 1000000);
+memoryCache.storePermanentItem('key1', 1);
+
+console.log(memoryCache.retrieveItemValue('key1')); // Logs to console: 1
+console.log(memoryCache.retrieveItemValue('notFound')); // Logs to console: undefined
+```
+
+### Removing an item from the memory cache
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const memoryCache = new MemoryCache<string, number>(600, 1000000);
+memoryCache.storePermanentItem('key1', 1);
+console.log(memoryCache.hasItem('key1')); // Logs to console: true
+memoryCache.removeItem('key1');
+console.log(memoryCache.hasItem('key1')); // Logs to console: false
+```
+
+### Clearing the memory cache
+Below examples removes all items from the memory cache
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const memoryCache = new MemoryCache<string, number>(600, 1000000);
+// Use cache here
+// ...
+memoryCache.clear()
+```
+
+### Destroying the memory cache
+Below example destroys the memory cache and it **should not be used** after that.
+It clears the memory cache and also removes the timer for checking expired items.
+**NOTE! You should NEVER use a destroyed cache again!**
+
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const memoryCache = new MemoryCache<string, number>(600, 1000000);
+// Use cache here
+// ...
+memoryCache.destroy()
+```
+
 ## <a name="api-documentation"></a> API Documentation
 
 ```ts
@@ -39,6 +136,7 @@ class MemoryCache<K, V> {
   retrieveItemValue(itemKey: K): V | undefined;
   removeItem(itemKey: K): void;
   clear(): void;
+  destroy(): void;
 }
 ```
 
