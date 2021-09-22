@@ -66,7 +66,7 @@ memoryCache.storeExpiringItem('key2', 2, timeToLiveInSecs);
 console.log(memoryCache.getItemCount()); // Logs to console: 2
 ```
 
-### Checking if item exists in the memory cache
+### Checking if an item exists in the memory cache
 ```ts
 import { MemoryCache } from 'memory-cache-node';
 
@@ -114,6 +114,7 @@ memoryCache.clear()
 Below example destroys the memory cache and it **should not be used** after that.
 It clears the memory cache and also removes the timer for checking expired items.
 **NOTE! You should NEVER use a destroyed cache again!**
+You should destroy your memory cache if it is not used in your application anymore.
 
 ```ts
 import { MemoryCache } from 'memory-cache-node';
