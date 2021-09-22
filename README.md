@@ -1,4 +1,7 @@
 # memory-cache-node
+A fast and modern memory cache for Node.js and browser. `Memory-cache-node` use Javascript Map as cache implementation which
+is faster than using Javascript object that some other similar libraries use. `Memory-cache-node` also uses implementation that does
+not block the event loop for a long time, if the cache is very large (hundreds of thousands or millions of entries).
 
 [![version][version-badge]][package]
 [![build][build]][circleci]
@@ -9,8 +12,39 @@
 [![Downloads][downloads]][package]
 [![MIT License][license-badge]][license]
 
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+- [API Documentation](#api-documentation)
+- [License](#license)
+
+## <a name="installation"></a> Installation
+```bash
+npm install --save memory-cache-node
+```
+
+## <a name="usage"></a> Usage
+
+## <a name="api-documentation"></a> API Documentation
+
+```ts
+class MemoryCache<K, V> {
+  constructor(itemsExpirationCheckIntervalInSecs: number, maxItemCount: number);
+  storePermanentItem(itemKey: K, itemValue: V): void;
+  storeExpiringItem(itemKey: K, itemValue: V, timeToLiveInSecs: number): void;
+  getItemCount(): number;
+  hasItem(itemKey: K): boolean;
+  retrieveItemValue(itemKey: K): V | undefined;
+  removeItem(itemKey: K): void;
+  clear(): void;
+  }
+```
+
+## <a name="license"></a> License
+[MIT](https://github.com/pksilen/memory-cache-node/blob/main/LICENSE)
+
 [license-badge]: https://img.shields.io/badge/license-MIT-green
-[license]: https://github.com/pksilen/memory-cache-node/blob/master/LICENSE
+[license]: https://github.com/pksilen/memory-cache-node/blob/main/LICENSE
 [version-badge]: https://img.shields.io/npm/v/memory-cache-node.svg?style=flat-square
 [package]: https://www.npmjs.com/package/memory-cache-node
 [downloads]: https://img.shields.io/npm/dm/memory-cache-node
