@@ -9,7 +9,7 @@
 [![Downloads][downloads]][package]
 [![MIT License][license-badge]][license]
 
-A fast and modern memory cache for Node.js and browser. `memory-cache-node` use Javascript Map as cache implementation which
+A fast and type safe memory cache for Node.js and browser. `memory-cache-node` use Javascript Map as cache implementation which
 is faster than using Javascript object that some other similar libraries use. `memory-cache-node` also uses implementation that does
 not block the event loop for a long time, if the cache is very large (hundreds of thousands or millions of entries).
 
@@ -41,6 +41,9 @@ class MemoryCache<K, V> {
   clear(): void;
 }
 ```
+
+`K` is the type of the item key.
+`V` is the type of the item value.
 
 ## <a name="license"></a> License
 [MIT](https://github.com/pksilen/memory-cache-node/blob/main/LICENSE)
