@@ -1,7 +1,4 @@
 # memory-cache-node
-A fast and modern memory cache for Node.js and browser. `Memory-cache-node` use Javascript Map as cache implementation which
-is faster than using Javascript object that some other similar libraries use. `Memory-cache-node` also uses implementation that does
-not block the event loop for a long time, if the cache is very large (hundreds of thousands or millions of entries).
 
 [![version][version-badge]][package]
 [![build][build]][circleci]
@@ -11,6 +8,11 @@ not block the event loop for a long time, if the cache is very large (hundreds o
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=pksilen_memory-cache-node&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=pksilen_memory-cache-node)
 [![Downloads][downloads]][package]
 [![MIT License][license-badge]][license]
+
+A fast and modern memory cache for Node.js and browser. `memory-cache-node` use Javascript Map as cache implementation which
+is faster than using Javascript object that some other similar libraries use. `memory-cache-node` also uses implementation that does
+not block the event loop for a long time, if the cache is very large (hundreds of thousands or millions of entries).
+
 
 ## Table of Contents
 - [Installation](#installation)
@@ -37,7 +39,7 @@ class MemoryCache<K, V> {
   retrieveItemValue(itemKey: K): V | undefined;
   removeItem(itemKey: K): void;
   clear(): void;
-  }
+}
 ```
 
 ## <a name="license"></a> License
