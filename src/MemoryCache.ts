@@ -21,10 +21,16 @@ export default class MemoryCache<K, V> {
   }
 
   storeExpiringItem(itemKey: K, itemValue: V, timeToLiveInSecs: number): void {
+    if (this.timer === null) {
+      throw new Error('Cache is destroyed. Cannot store items anymore.')
+    }
+
     if (this.itemCount < this.maxItemCount) {
       this.itemKeyToItemValueWrapperMap.set(itemKey, {
         itemValue,
-        expirationTimestampInMillisSinceEpoch: timeToLiveInSecs ? Date.now() + timeToLiveInSecs * 1000 : undefined
+        expirationTimestampInMillisSinceEpoch: timeToLiveInSecs
+          ? Date.now() + timeToLiveInSecs * 1000
+          : undefined,
       });
       this.itemCount++;
     }
@@ -52,7 +58,11 @@ export default class MemoryCache<K, V> {
   clear(): void {
     this.itemKeyToItemValueWrapperMap.clear();
     this.itemCount = 0;
+  }
+
+  destroy(): void {
     if (this.timer) {
+      this.clear();
       clearInterval(this.timer);
       this.timer = null;
     }
@@ -62,7 +72,7 @@ export default class MemoryCache<K, V> {
     const currentTimestampInMillisSinceEpoch = Date.now();
     const iterator = this.itemKeyToItemValueWrapperMap.entries();
     this.deleteExpiredItemsFromBatch(iterator, currentTimestampInMillisSinceEpoch);
-  }
+  };
 
   private deleteExpiredItemsFromBatch(
     iterator: IterableIterator<[K, ItemValueWrapper<V>]>,

@@ -7,47 +7,49 @@ jest.setTimeout(60000);
 
 let memoryCache: MemoryCache<string, number>;
 afterEach(() => {
-  memoryCache.clear();
-})
+  memoryCache.destroy();
+});
 
 describe('MemoryCache', () => {
   describe('constructor', () => {
     it('it should create an empty memory cache successfully', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
-      expect((memoryCache.getItemCount())).toBe(0);
+      expect(memoryCache.getItemCount()).toBe(0);
     });
   });
   describe('storePermanentItem', () => {
-    it('should store a permanent item in cache', (done) => {
+    it('should call storeExpiringItem with timeToLiveInSecs set to zero', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storeExpiringItem = jest.fn();
       memoryCache.storePermanentItem('key', 1);
-      setTimeout(() => {
-        expect((memoryCache.getItemCount())).toBe(1);
-        done();
-      }, 3000);
-    });
-    it('should replace an existing item in the cache', () => {
-      memoryCache = new MemoryCache<string, number>(1, 10);
-      memoryCache.storePermanentItem('key', 1);
-      memoryCache.storePermanentItem('key', 2);
-      expect(memoryCache.retrieveItemValue('key')).toBe(2);
+      expect(memoryCache.storeExpiringItem).toHaveBeenCalledWith('key', 1, 0);
     });
   });
   describe('storeExpiringItem', () => {
-    it('should store an expiring item in cache and cache should not contain item after it has expired', (done) => {
+    it('should store an expiring item in cache', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
-      memoryCache.storeExpiringItem('key', 1, 1);
-      setTimeout(() => {
-        expect(memoryCache.hasItem('key')).toBe(false);
-        expect((memoryCache.getItemCount())).toBe(0);
-        done();
-      }, 3000);
+      memoryCache.storeExpiringItem('key', 1, 10);
+      expect(memoryCache.hasItem('key')).toBe(true);
+      expect(memoryCache.getItemCount()).toBe(1);
+    });
+    it('should not store item in the cache if cache is full', () => {
+      memoryCache = new MemoryCache<string, number>(1, 1);
+      memoryCache.storeExpiringItem('key', 1, 10);
+      memoryCache.storeExpiringItem('key', 2, 10);
+      expect(memoryCache.getItemCount()).toBe(1);
     });
     it('should replace an existing item in the cache', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
       memoryCache.storeExpiringItem('key', 1, 10);
       memoryCache.storeExpiringItem('key', 2, 10);
       expect(memoryCache.retrieveItemValue('key')).toBe(2);
+    });
+    it('should throw an error if cache is destroyed', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.destroy();
+      expect(() => {
+        memoryCache.storeExpiringItem('key', 1, 10);
+      }).toThrow('Cache is destroyed. Cannot store items anymore.');
     });
   });
   describe('getItemCount', () => {
@@ -112,18 +114,65 @@ describe('MemoryCache', () => {
       memoryCache.clear();
       expect(memoryCache.getItemCount()).toBe(0);
     });
+    it('it is idempotent', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.clear();
+      memoryCache.clear();
+    });
+  });
+  describe('destroy', () => {
+    it('it should clear the cache', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storePermanentItem('key', 2);
+      memoryCache.clear = jest.fn();
+      memoryCache.destroy();
+      expect(memoryCache.clear).toHaveBeenCalledTimes(1);
+    });
     it('it clears the items expiration check timer', () => {
       jest.useFakeTimers('legacy');
       memoryCache = new MemoryCache<string, number>(1, 10);
       memoryCache.storeExpiringItem('key', 2, 1);
-      memoryCache.clear();
+      memoryCache.destroy();
       expect(clearInterval).toHaveBeenCalledTimes(1);
       jest.useRealTimers();
     });
     it('it is idempotent', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
-      memoryCache.clear();
-      memoryCache.clear();
+      memoryCache.destroy();
+      memoryCache.destroy();
+    });
+  });
+  describe('deleteExpiredItems', () => {
+    it('should not delete permanent item from cache', (done) => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storePermanentItem('key', 1);
+      setTimeout(() => {
+        expect(memoryCache.getItemCount()).toBe(1);
+        done();
+      }, 3000);
+    });
+    it('should not delete non-expired item from cache', (done) => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storeExpiringItem('key', 1, 60);
+      setTimeout(() => {
+        expect(memoryCache.getItemCount()).toBe(1);
+        done();
+      }, 3000);
+    });
+    it('should delete expired items from cache', (done) => {
+      const itemCount = 250000;
+      memoryCache = new MemoryCache<string, number>(1, itemCount);
+
+      Array(itemCount)
+        .fill(1)
+        .forEach((_, index) => {
+          memoryCache.storeExpiringItem('key' + index, 1, 1);
+        });
+
+      setTimeout(() => {
+        expect(memoryCache.getItemCount()).toBe(0);
+        done();
+      }, 5000);
     });
   });
 });
