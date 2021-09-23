@@ -113,7 +113,8 @@ memoryCache.clear()
 ### Destroying the memory cache
 Below example destroys the memory cache and it **should not be used** after that.
 It clears the memory cache and also removes the timer for checking expired items.
-**NOTE! You should NEVER use a destroyed cache again!**
+**NOTE! You should NEVER use a destroyed cache again!** 
+If you try to use a destroyed memory cache, an exception will be thrown.
 You should destroy your memory cache if it is not used in your application anymore.
 
 ```ts
