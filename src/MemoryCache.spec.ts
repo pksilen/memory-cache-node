@@ -14,7 +14,7 @@ describe('MemoryCache', () => {
   describe('constructor', () => {
     it('it should create an empty memory cache successfully', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
-      expect(memoryCache.getItemCount()).toBe(0);
+      expect((memoryCache as any).itemKeyToItemValueWrapperMap.size).toBe(0);
     });
   });
   describe('storePermanentItem', () => {
@@ -30,13 +30,14 @@ describe('MemoryCache', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
       memoryCache.storeExpiringItem('key', 1, 10);
       expect(memoryCache.hasItem('key')).toBe(true);
-      expect(memoryCache.getItemCount()).toBe(1);
+      expect((memoryCache as any).itemKeyToItemValueWrapperMap.size).toBe(1);
+
     });
     it('should not store item in the cache if cache is full', () => {
       memoryCache = new MemoryCache<string, number>(1, 1);
       memoryCache.storeExpiringItem('key', 1, 10);
       memoryCache.storeExpiringItem('key', 2, 10);
-      expect(memoryCache.getItemCount()).toBe(1);
+      expect((memoryCache as any).itemKeyToItemValueWrapperMap.size).toBe(1);
     });
     it('should replace an existing item in the cache', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
@@ -61,7 +62,8 @@ describe('MemoryCache', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
       memoryCache.storePermanentItem('key', 1);
       memoryCache.storePermanentItem('key2', 2);
-      expect(memoryCache.getItemCount()).toBe(2);
+      memoryCache.removeItem('key2');
+      expect(memoryCache.getItemCount()).toBe(1);
     });
   });
   describe('hasItem', () => {
@@ -92,13 +94,13 @@ describe('MemoryCache', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
       memoryCache.storePermanentItem('key', 2);
       memoryCache.removeItem('key');
-      expect(memoryCache.getItemCount()).toBe(0);
+      expect((memoryCache as any).itemKeyToItemValueWrapperMap.size).toBe(0);
     });
     it('should not decrement item count if cache does not contain item with given key', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
       memoryCache.storePermanentItem('key', 2);
       memoryCache.removeItem('key2');
-      expect(memoryCache.getItemCount()).toBe(1);
+      expect((memoryCache as any).itemKeyToItemValueWrapperMap.size).toBe(1);
     });
   });
   describe('clear', () => {
@@ -106,7 +108,7 @@ describe('MemoryCache', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
       memoryCache.storePermanentItem('key', 2);
       memoryCache.clear();
-      expect(memoryCache.retrieveItemValue('key')).toBe(undefined);
+      expect((memoryCache as any).itemKeyToItemValueWrapperMap.size).toBe(0);
     });
     it('it should set the item count to zero', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
@@ -148,6 +150,7 @@ describe('MemoryCache', () => {
       memoryCache.storePermanentItem('key', 1);
       setTimeout(() => {
         expect(memoryCache.getItemCount()).toBe(1);
+        expect((memoryCache as any).itemKeyToItemValueWrapperMap.size).toBe(1);
         done();
       }, 3000);
     });
@@ -156,6 +159,7 @@ describe('MemoryCache', () => {
       memoryCache.storeExpiringItem('key', 1, 60);
       setTimeout(() => {
         expect(memoryCache.getItemCount()).toBe(1);
+        expect((memoryCache as any).itemKeyToItemValueWrapperMap.size).toBe(1);
         done();
       }, 3000);
     });
@@ -171,6 +175,7 @@ describe('MemoryCache', () => {
 
       setTimeout(() => {
         expect(memoryCache.getItemCount()).toBe(0);
+        expect((memoryCache as any).itemKeyToItemValueWrapperMap.size).toBe(0);
         done();
       }, 5000);
     });
