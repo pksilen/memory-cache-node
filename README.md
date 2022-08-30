@@ -13,7 +13,6 @@ A fast and type safe memory cache for Node.js and browser. `memory-cache-node` u
 is faster than using Javascript object that some other similar libraries use. `memory-cache-node` also uses implementation that does
 not block the event loop for a long time, if the cache is very large (hundreds of thousands or millions of entries).
 
-
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
@@ -88,6 +87,16 @@ console.log(memoryCache.retrieveItemValue('key1')); // Logs to console: 1
 console.log(memoryCache.retrieveItemValue('notFound')); // Logs to console: undefined
 ```
 
+### Getting the item expiration timestamp
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const memoryCache = new MemoryCache<string, number>(600, 1000000);
+memoryCache.storePermanentItem('key1', 1);
+
+console.log(memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key1')); // Logs some large number to console
+```
+
 ### Removing an item from the memory cache
 ```ts
 import { MemoryCache } from 'memory-cache-node';
@@ -129,6 +138,9 @@ memoryCache.destroy()
 ## <a name="api-documentation"></a> API Documentation
 
 ```ts
+`K` is the type of the item key.
+`V` is the type of the item value.
+  
 class MemoryCache<K, V> {
   constructor(itemsExpirationCheckIntervalInSecs: number, maxItemCount: number);
   storePermanentItem(itemKey: K, itemValue: V): void;
@@ -136,14 +148,12 @@ class MemoryCache<K, V> {
   getItemCount(): number;
   hasItem(itemKey: K): boolean;
   retrieveItemValue(itemKey: K): V | undefined;
+  getItemExpirationTimestampInMillisSinceEpoch(itemKey: K): number | undefined;
   removeItem(itemKey: K): void;
   clear(): void;
   destroy(): void;
 }
 ```
-
-`K` is the type of the item key.
-`V` is the type of the item value.
 
 ## <a name="license"></a> License
 [MIT](https://github.com/pksilen/memory-cache-node/blob/main/LICENSE)

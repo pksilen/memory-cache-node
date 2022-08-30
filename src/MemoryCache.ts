@@ -48,6 +48,10 @@ export default class MemoryCache<K, V> {
     return this.itemKeyToItemValueWrapperMap.get(itemKey)?.itemValue;
   }
 
+  getItemExpirationTimestampInMillisSinceEpoch(itemKey: K): number | undefined {
+    return this.itemKeyToItemValueWrapperMap.get(itemKey)?.expirationTimestampInMillisSinceEpoch;
+  }
+
   removeItem(itemKey: K): void {
     if (this.hasItem(itemKey)) {
       this.itemKeyToItemValueWrapperMap.delete(itemKey);

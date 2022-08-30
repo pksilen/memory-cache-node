@@ -89,6 +89,18 @@ describe('MemoryCache', () => {
       expect(memoryCache.retrieveItemValue('key')).toBe(undefined);
     });
   });
+  describe('getItemExpirationTimestampInMillisSinceEpoch', () => {
+    it('should return the item expiration timestamp if cache contains item with given key', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storeExpiringItem('key', 2, 60);
+      expect(memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key'))
+        .toBeGreaterThan(Date.now());
+    });
+    it('should return undefined if cache does not contain item with given key', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      expect(memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key')).toBe(undefined);
+    });
+  });
   describe('removeItem', () => {
     it('should remove the item if cache contains item with given key', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
