@@ -78,6 +78,32 @@ describe('MemoryCache', () => {
       expect(memoryCache.hasItem('key2')).toBe(false);
     });
   });
+  describe('getItems', () => {
+    it('should return an empty array if cache is empty', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      expect(memoryCache.getItems()).toEqual([]);
+    });
+    it('should return an array of items in cache', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storePermanentItem('key', 1);
+      memoryCache.storePermanentItem('key2', 2);
+      memoryCache.removeItem('key2');
+      expect(memoryCache.getItems()).toEqual([1]);
+    });
+  })
+  describe('getEntries', () => {
+    it('should return an empty array if cache is empty', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      expect(memoryCache.getEntries()).toEqual([]);
+    });
+    it('should return an array of entries in cache', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storePermanentItem('key', 1);
+      memoryCache.storePermanentItem('key2', 2);
+      memoryCache.removeItem('key2');
+      expect(memoryCache.getEntries()).toEqual([['key', 1]]);
+    });
+  })
   describe('retrieveItemValue', () => {
     it('should return the item value if cache contains item with given key', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);

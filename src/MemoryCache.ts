@@ -44,6 +44,14 @@ export default class MemoryCache<K, V> {
     return this.itemKeyToItemValueWrapperMap.has(itemKey);
   }
 
+  getItems(): V[] {
+    return Array.from(this.itemKeyToItemValueWrapperMap.values()).map((valueWrapper) => valueWrapper.itemValue);
+  }
+
+  getEntries(): [K, V][] {
+    return Array.from(this.itemKeyToItemValueWrapperMap.entries()).map(([key, valueWrapper]) => [key, valueWrapper.itemValue]);
+  }
+
   retrieveItemValue(itemKey: K): V | undefined {
     return this.itemKeyToItemValueWrapperMap.get(itemKey)?.itemValue;
   }
