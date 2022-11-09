@@ -147,9 +147,17 @@ class MemoryCache<K, V> {
   storeExpiringItem(itemKey: K, itemValue: V, timeToLiveInSecs: number): void;
   getItemCount(): number;
   hasItem(itemKey: K): boolean;
+  getValues(): V[];
+  getItems(): [K, V][];
   retrieveItemValue(itemKey: K): V | undefined;
   getItemExpirationTimestampInMillisSinceEpoch(itemKey: K): number | undefined;
   removeItem(itemKey: K): void;
+  exportItemsToJson(): string;
+  
+  // Use below two functions only with JSON output from exportItemsToJson method
+  importPermanentItemsFrom(json: string): void; // Can throw if JSON is invalid
+  importExpiringItemsFrom(json: string, timeToLiveInSecs: number): void; // Can throw if JSON is invalid
+  
   clear(): void;
   destroy(): void;
 }

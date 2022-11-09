@@ -1,11 +1,11 @@
-export type ItemValueWrapper<V> = {
-  itemValue: V;
-  expirationTimestampInMillisSinceEpoch: number | undefined;
+export type ValueWrapper<V> = {
+  readonly value: V;
+  readonly expirationTimestampInMillis: number | undefined;
 };
 
 export default class MemoryCache<K, V> {
   private static readonly EXPIRATION_PROCESSING_ITEM_BATCH_SIZE = 100000;
-  private readonly itemKeyToItemValueWrapperMap = new Map<K, ItemValueWrapper<V>>();
+  private readonly itemKeyToValueWrapperMap = new Map<K, ValueWrapper<V>>();
   private timer: NodeJS.Timer | null;
   private itemCount = 0;
 
@@ -16,21 +16,19 @@ export default class MemoryCache<K, V> {
     this.timer = setInterval(this.deleteExpiredItems, itemsExpirationCheckIntervalInSecs * 1000);
   }
 
-  storePermanentItem(itemKey: K, itemValue: V): void {
-    this.storeExpiringItem(itemKey, itemValue, 0);
+  storePermanentItem(key: K, value: V): void {
+    this.storeExpiringItem(key, value, 0);
   }
 
-  storeExpiringItem(itemKey: K, itemValue: V, timeToLiveInSecs: number): void {
+  storeExpiringItem(key: K, value: V, timeToLiveInSecs: number): void {
     if (this.timer === null) {
-      throw new Error('Cache is destroyed. Cannot store items anymore.')
+      throw new Error('Cache is destroyed. Cannot store items anymore.');
     }
 
     if (this.itemCount < this.maxItemCount) {
-      this.itemKeyToItemValueWrapperMap.set(itemKey, {
-        itemValue,
-        expirationTimestampInMillisSinceEpoch: timeToLiveInSecs
-          ? Date.now() + timeToLiveInSecs * 1000
-          : undefined,
+      this.itemKeyToValueWrapperMap.set(key, {
+        value,
+        expirationTimestampInMillis: timeToLiveInSecs ? Date.now() + timeToLiveInSecs * 1000 : undefined,
       });
       this.itemCount++;
     }
@@ -41,34 +39,37 @@ export default class MemoryCache<K, V> {
   }
 
   hasItem(itemKey: K): boolean {
-    return this.itemKeyToItemValueWrapperMap.has(itemKey);
+    return this.itemKeyToValueWrapperMap.has(itemKey);
   }
 
-  getItems(): V[] {
-    return Array.from(this.itemKeyToItemValueWrapperMap.values()).map((valueWrapper) => valueWrapper.itemValue);
+  getValues(): V[] {
+    return Array.from(this.itemKeyToValueWrapperMap.values()).map((valueWrapper) => valueWrapper.value);
   }
 
-  getEntries(): [K, V][] {
-    return Array.from(this.itemKeyToItemValueWrapperMap.entries()).map(([key, valueWrapper]) => [key, valueWrapper.itemValue]);
+  getItems(): [K, V][] {
+    return Array.from(this.itemKeyToValueWrapperMap.entries()).map(([key, valueWrapper]) => [
+      key,
+      valueWrapper.value,
+    ]);
   }
 
   retrieveItemValue(itemKey: K): V | undefined {
-    return this.itemKeyToItemValueWrapperMap.get(itemKey)?.itemValue;
+    return this.itemKeyToValueWrapperMap.get(itemKey)?.value;
   }
 
   getItemExpirationTimestampInMillisSinceEpoch(itemKey: K): number | undefined {
-    return this.itemKeyToItemValueWrapperMap.get(itemKey)?.expirationTimestampInMillisSinceEpoch;
+    return this.itemKeyToValueWrapperMap.get(itemKey)?.expirationTimestampInMillis;
   }
 
   removeItem(itemKey: K): void {
     if (this.hasItem(itemKey)) {
-      this.itemKeyToItemValueWrapperMap.delete(itemKey);
+      this.itemKeyToValueWrapperMap.delete(itemKey);
       this.itemCount--;
     }
   }
 
   clear(): void {
-    this.itemKeyToItemValueWrapperMap.clear();
+    this.itemKeyToValueWrapperMap.clear();
     this.itemCount = 0;
   }
 
@@ -80,14 +81,38 @@ export default class MemoryCache<K, V> {
     }
   }
 
+  exportItemsToJson(): string {
+    const itemsObject = Array.from(this.itemKeyToValueWrapperMap.entries()).reduce(
+      (object, [key, { value }]) => ({
+        ...object,
+        [key as any]: value,
+      }),
+      {}
+    );
+
+    return JSON.stringify(itemsObject);
+  }
+
+  importPermanentItemsFrom(json: string): void {
+    Object.entries(JSON.parse(json)).forEach(([key, value]: [string, any]) => {
+      this.storePermanentItem(key as any, value);
+    });
+  }
+
+  importExpiringItemsFrom(json: string, timeToLiveInSecs: number): void {
+    Object.entries(JSON.parse(json)).forEach(([key, value]: [string, any]) => {
+      this.storeExpiringItem(key as any, value, timeToLiveInSecs);
+    });
+  }
+
   private readonly deleteExpiredItems = (): void => {
     const currentTimestampInMillisSinceEpoch = Date.now();
-    const iterator = this.itemKeyToItemValueWrapperMap.entries();
+    const iterator = this.itemKeyToValueWrapperMap.entries();
     this.deleteExpiredItemsFromBatch(iterator, currentTimestampInMillisSinceEpoch);
   };
 
   private deleteExpiredItemsFromBatch(
-    iterator: IterableIterator<[K, ItemValueWrapper<V>]>,
+    iterator: IterableIterator<[K, ValueWrapper<V>]>,
     currentTimestampInMillisSinceEpoch: number
   ): void {
     for (let i = 0; i < MemoryCache.EXPIRATION_PROCESSING_ITEM_BATCH_SIZE; i++) {
@@ -100,10 +125,10 @@ export default class MemoryCache<K, V> {
       const [itemKey, valueWrapper] = iteratorResult.value;
 
       if (
-        valueWrapper.expirationTimestampInMillisSinceEpoch &&
-        valueWrapper.expirationTimestampInMillisSinceEpoch < currentTimestampInMillisSinceEpoch
+        valueWrapper.expirationTimestampInMillis &&
+        valueWrapper.expirationTimestampInMillis < currentTimestampInMillisSinceEpoch
       ) {
-        this.itemKeyToItemValueWrapperMap.delete(itemKey);
+        this.itemKeyToValueWrapperMap.delete(itemKey);
         this.itemCount--;
       }
     }
