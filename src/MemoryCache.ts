@@ -30,6 +30,7 @@ export default class MemoryCache<K, V> {
         value,
         expirationTimestampInMillis: timeToLiveInSecs ? Date.now() + timeToLiveInSecs * 1000 : undefined,
       });
+
       this.itemCount++;
     }
   }
@@ -83,9 +84,9 @@ export default class MemoryCache<K, V> {
 
   exportItemsToJson(): string {
     const itemsObject = Array.from(this.itemKeyToValueWrapperMap.entries()).reduce(
-      (object, [key, { value }]) => ({
-        ...object,
-        [key as any]: value,
+      (itemsObject, [key, valueWrapper]) => ({
+        ...itemsObject,
+        [key as any]: valueWrapper,
       }),
       {}
     );
@@ -93,16 +94,23 @@ export default class MemoryCache<K, V> {
     return JSON.stringify(itemsObject);
   }
 
-  importPermanentItemsFrom(json: string): void {
-    Object.entries(JSON.parse(json)).forEach(([key, value]: [string, any]) => {
-      this.storePermanentItem(key as any, value);
-    });
-  }
+  importItemsFrom(json: string): void {
+    Object.entries(JSON.parse(json)).forEach(
+      ([key, { value, expirationTimestampInMillis }]: [string, any]) => {
+        if (this.timer === null) {
+          throw new Error('Cache is destroyed. Cannot store items anymore.');
+        }
 
-  importExpiringItemsFrom(json: string, timeToLiveInSecs: number): void {
-    Object.entries(JSON.parse(json)).forEach(([key, value]: [string, any]) => {
-      this.storeExpiringItem(key as any, value, timeToLiveInSecs);
-    });
+        if (this.itemCount < this.maxItemCount) {
+          this.itemKeyToValueWrapperMap.set(key as any, {
+            value,
+            expirationTimestampInMillis
+          });
+
+          this.itemCount++;
+        }
+      }
+    );
   }
 
   private readonly deleteExpiredItems = (): void => {

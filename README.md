@@ -154,9 +154,8 @@ class MemoryCache<K, V> {
   removeItem(itemKey: K): void;
   exportItemsToJson(): string;
   
-  // Use below two functions only with JSON output from exportItemsToJson method
-  importPermanentItemsFrom(json: string): void; // Can throw if JSON is invalid
-  importExpiringItemsFrom(json: string, timeToLiveInSecs: number): void; // Can throw if JSON is invalid
+  // Use below function only with JSON output from exportItemsToJson method
+  importItemsFrom(json: string): void; // Can throw if JSON is invalid
   
   clear(): void;
   destroy(): void;
