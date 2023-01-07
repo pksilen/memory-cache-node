@@ -153,6 +153,15 @@ describe('MemoryCache', () => {
       const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
       expect(newExpirationTimestamp).toBe(timeToLiveUntil);
     });
+
+    it('should make an item permanent', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storeExpiringItem('key', 2, 10);
+
+      memoryCache.setItemTimeToLiveUntil('key', undefined);
+      const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
+      expect(newExpirationTimestamp).toBe(undefined);
+    });
   });
 
   describe('getItemExpirationTimestampInMillisSinceEpoch', () => {

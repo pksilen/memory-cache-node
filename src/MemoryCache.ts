@@ -58,7 +58,7 @@ export default class MemoryCache<K, V> {
     return this.itemKeyToValueWrapperMap.get(itemKey)?.value;
   }
 
-  setItemTimeToLiveUntil(itemKey: K, timeToLiveUntilInMillisSinceEpoch: number): void {
+  setItemTimeToLiveUntil(itemKey: K, timeToLiveUntilInMillisSinceEpoch: number | undefined): void {
     const valueWrapper = this.itemKeyToValueWrapperMap.get(itemKey);
 
     if (valueWrapper !== undefined) {

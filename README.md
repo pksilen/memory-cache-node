@@ -111,6 +111,16 @@ const endOfThisYear = new Date(new Date().getFullYear(), 11, 31);
 memoryCache.setItemTimeToLiveUntil('key1', endOfThisYear.getTime());
 ```
 
+#### Making an expiring item permanent
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const memoryCache = new MemoryCache<string, number>(600, 1000000);
+memoryCache.storeExpiringItem('key1', 1, 60);
+
+memoryCache.setItemTimeToLiveUntil('key1', undefined); // Never expire
+```
+
 ### Getting the item expiration timestamp
 ```ts
 import { MemoryCache } from 'memory-cache-node';
