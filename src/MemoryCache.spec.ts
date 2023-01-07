@@ -150,8 +150,8 @@ describe('MemoryCache', () => {
 
       const timeToLiveUntil = Date.now() + 10000;
       memoryCache.setItemTimeToLiveUntil('key', timeToLiveUntil);
-      const originalExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
-      expect(originalExpirationTimestamp).toBe(timeToLiveUntil);
+      const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
+      expect(newExpirationTimestamp).toBe(timeToLiveUntil);
     });
   });
 
