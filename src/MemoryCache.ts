@@ -1,6 +1,6 @@
 export type ValueWrapper<V> = {
   readonly value: V;
-  readonly expirationTimestampInMillis: number | undefined;
+  expirationTimestampInMillis: number | undefined;
 };
 
 export default class MemoryCache<K, V> {
@@ -58,6 +58,22 @@ export default class MemoryCache<K, V> {
     return this.itemKeyToValueWrapperMap.get(itemKey)?.value;
   }
 
+  setItemTimeToLiveUntil(itemKey: K, timeToLiveUntilInMillisSinceEpoch: number): void {
+    const valueWrapper = this.itemKeyToValueWrapperMap.get(itemKey);
+
+    if (valueWrapper !== undefined) {
+      valueWrapper.expirationTimestampInMillis = timeToLiveUntilInMillisSinceEpoch;
+    }
+  }
+
+  setItemTimeToLiveRemaining(itemKey: K, timeToLiveInSecs: number): void {
+    const valueWrapper = this.itemKeyToValueWrapperMap.get(itemKey);
+
+    if (valueWrapper !== undefined) {
+      valueWrapper.expirationTimestampInMillis = Date.now() + timeToLiveInSecs * 1000;
+    }
+  }
+
   getItemExpirationTimestampInMillisSinceEpoch(itemKey: K): number | undefined {
     return this.itemKeyToValueWrapperMap.get(itemKey)?.expirationTimestampInMillis;
   }
@@ -104,7 +120,7 @@ export default class MemoryCache<K, V> {
         if (this.itemCount < this.maxItemCount) {
           this.itemKeyToValueWrapperMap.set(key as any, {
             value,
-            expirationTimestampInMillis
+            expirationTimestampInMillis,
           });
 
           this.itemCount++;

@@ -87,6 +87,30 @@ console.log(memoryCache.retrieveItemValue('key1')); // Logs to console: 1
 console.log(memoryCache.retrieveItemValue('notFound')); // Logs to console: undefined
 ```
 
+### Changing the item expiration timestamp
+You can set the item expiration time for both permanent and already expiring items.
+
+#### With a relative expiration time
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const memoryCache = new MemoryCache<string, number>(600, 1000000);
+memoryCache.storePermanentItem('key1', 1);
+
+memoryCache.setItemTimeToLiveRemaining('key1', 5); // expire in 5 seconds from now instead of never
+```
+#### To an absolute expiration time
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const memoryCache = new MemoryCache<string, number>(600, 1000000);
+memoryCache.storeExpiringItem('key1', 1, 60);
+
+// Expire at the end of this year, instead of in 60 seconds:
+const endOfThisYear = new Date(new Date().getFullYear(), 11, 31);
+memoryCache.setItemTimeToLiveUntil('key1', endOfThisYear.getTime());
+```
+
 ### Getting the item expiration timestamp
 ```ts
 import { MemoryCache } from 'memory-cache-node';
@@ -150,6 +174,8 @@ class MemoryCache<K, V> {
   getValues(): V[];
   getItems(): [K, V][];
   retrieveItemValue(itemKey: K): V | undefined;
+  setItemTimeToLiveUntil(itemKey: K, timeToLiveUntilInMillisSinceEpoch: number): void;
+  setItemTimeToLiveRemaining(itemKey: K, timeToLiveInSecs: number): void;
   getItemExpirationTimestampInMillisSinceEpoch(itemKey: K): number | undefined;
   removeItem(itemKey: K): void;
   exportItemsToJson(): string;
