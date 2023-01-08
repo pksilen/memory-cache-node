@@ -184,7 +184,7 @@ class MemoryCache<K, V> {
   getValues(): V[];
   getItems(): [K, V][];
   retrieveItemValue(itemKey: K): V | undefined;
-  setItemTimeToLiveUntil(itemKey: K, timeToLiveUntilInMillisSinceEpoch: number): void;
+  setItemTimeToLiveUntil(itemKey: K, timeToLiveUntilInMillisSinceEpoch: number | undefined): void;
   setItemTimeToLiveRemaining(itemKey: K, timeToLiveInSecs: number): void;
   getItemExpirationTimestampInMillisSinceEpoch(itemKey: K): number | undefined;
   removeItem(itemKey: K): void;
