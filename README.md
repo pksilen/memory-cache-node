@@ -90,15 +90,6 @@ console.log(memoryCache.retrieveItemValue('notFound')); // Logs to console: unde
 ### Changing the item expiration timestamp
 You can set the item expiration time for both permanent and already expiring items.
 
-#### With a relative expiration time
-```ts
-import { MemoryCache } from 'memory-cache-node';
-
-const memoryCache = new MemoryCache<string, number>(600, 1000000);
-memoryCache.storePermanentItem('key1', 1);
-
-memoryCache.setItemTimeToLiveRemaining('key1', 5); // expire in 5 seconds from now instead of never
-```
 #### To an absolute expiration time
 ```ts
 import { MemoryCache } from 'memory-cache-node';
@@ -109,6 +100,16 @@ memoryCache.storeExpiringItem('key1', 1, 60);
 // Expire at the end of this year, instead of in 60 seconds:
 const endOfThisYear = new Date(new Date().getFullYear(), 11, 31);
 memoryCache.setItemTimeToLiveUntil('key1', endOfThisYear.getTime());
+```
+
+#### With a relative expiration time
+```ts
+import { MemoryCache } from 'memory-cache-node';
+
+const memoryCache = new MemoryCache<string, number>(600, 1000000);
+memoryCache.storePermanentItem('key1', 1);
+
+memoryCache.setItemTimeToLiveRemaining('key1', 5); // expire in 5 seconds from now instead of never
 ```
 
 #### Making an expiring item permanent

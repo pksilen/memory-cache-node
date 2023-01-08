@@ -130,6 +130,27 @@ describe('MemoryCache', () => {
     });
   });
 
+  describe('setItemTimeToLiveUntil', () => {
+    it('should take an absolute value at which the item should expire', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storeExpiringItem('key', 2, 10);
+
+      const timeToLiveUntil = Date.now() + 10000;
+      memoryCache.setItemTimeToLiveUntil('key', timeToLiveUntil);
+      const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
+      expect(newExpirationTimestamp).toBe(timeToLiveUntil);
+    });
+
+    it('should make an item permanent', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storeExpiringItem('key', 2, 10);
+
+      memoryCache.setItemTimeToLiveUntil('key', undefined);
+      const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
+      expect(newExpirationTimestamp).toBe(undefined);
+    });
+  });
+
   describe('setItemTimeToLiveRemaining', () => {
     it('should change a permanent item to temporary', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
@@ -147,27 +168,6 @@ describe('MemoryCache', () => {
       memoryCache.storePermanentItem('key', 2);
 
       memoryCache.setItemTimeToLiveRemaining('key', undefined);
-      const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
-      expect(newExpirationTimestamp).toBe(undefined);
-    });
-  });
-
-  describe('setItemTimeToLiveUntil', () => {
-    it('should take an absolute value at which the item should expire', () => {
-      memoryCache = new MemoryCache<string, number>(1, 10);
-      memoryCache.storeExpiringItem('key', 2, 10);
-
-      const timeToLiveUntil = Date.now() + 10000;
-      memoryCache.setItemTimeToLiveUntil('key', timeToLiveUntil);
-      const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
-      expect(newExpirationTimestamp).toBe(timeToLiveUntil);
-    });
-
-    it('should make an item permanent', () => {
-      memoryCache = new MemoryCache<string, number>(1, 10);
-      memoryCache.storeExpiringItem('key', 2, 10);
-
-      memoryCache.setItemTimeToLiveUntil('key', undefined);
       const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
       expect(newExpirationTimestamp).toBe(undefined);
     });
