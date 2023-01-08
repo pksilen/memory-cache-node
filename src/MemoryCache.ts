@@ -66,7 +66,11 @@ export default class MemoryCache<K, V> {
     }
   }
 
-  setItemTimeToLiveRemaining(itemKey: K, timeToLiveInSecs: number): void {
+  setItemTimeToLiveRemaining(itemKey: K, timeToLiveInSecs: number | undefined): void {
+    if (timeToLiveInSecs === undefined) {
+      return this.setItemTimeToLiveUntil(itemKey, undefined);
+    }
+
     const valueWrapper = this.itemKeyToValueWrapperMap.get(itemKey);
 
     if (valueWrapper !== undefined) {

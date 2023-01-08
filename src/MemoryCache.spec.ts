@@ -141,6 +141,15 @@ describe('MemoryCache', () => {
       const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
       expect(newExpirationTimestamp).toBeCloseTo(calculatedExpirationTimestmap, -2);
     });
+
+    it('should make an item permanent', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storePermanentItem('key', 2);
+
+      memoryCache.setItemTimeToLiveRemaining('key', undefined);
+      const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
+      expect(newExpirationTimestamp).toBe(undefined);
+    });
   });
 
   describe('setItemTimeToLiveUntil', () => {
