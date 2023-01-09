@@ -130,6 +130,49 @@ describe('MemoryCache', () => {
     });
   });
 
+  describe('setItemTimeToLiveUntil', () => {
+    it('should take an absolute value at which the item should expire', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storeExpiringItem('key', 2, 10);
+
+      const timeToLiveUntil = Date.now() + 10000;
+      memoryCache.setItemTimeToLiveUntil('key', timeToLiveUntil);
+      const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
+      expect(newExpirationTimestamp).toBe(timeToLiveUntil);
+    });
+
+    it('should make an item permanent', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storeExpiringItem('key', 2, 10);
+
+      memoryCache.setItemTimeToLiveUntil('key', undefined);
+      const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
+      expect(newExpirationTimestamp).toBe(undefined);
+    });
+  });
+
+  describe('setItemTimeToLiveRemaining', () => {
+    it('should change a permanent item to temporary', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storePermanentItem('key', 2);
+
+      const timeToLiveInSecs = 10;
+      const calculatedExpirationTimestmap = Date.now() + timeToLiveInSecs * 1000;
+      memoryCache.setItemTimeToLiveRemaining('key', timeToLiveInSecs);
+      const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
+      expect(newExpirationTimestamp).toBeCloseTo(calculatedExpirationTimestmap, -2);
+    });
+
+    it('should make an item permanent', () => {
+      memoryCache = new MemoryCache<string, number>(1, 10);
+      memoryCache.storePermanentItem('key', 2);
+
+      memoryCache.setItemTimeToLiveRemaining('key', undefined);
+      const newExpirationTimestamp = memoryCache.getItemExpirationTimestampInMillisSinceEpoch('key');
+      expect(newExpirationTimestamp).toBe(undefined);
+    });
+  });
+
   describe('getItemExpirationTimestampInMillisSinceEpoch', () => {
     it('should return the item expiration timestamp if cache contains item with given key', () => {
       memoryCache = new MemoryCache<string, number>(1, 10);
@@ -184,7 +227,7 @@ describe('MemoryCache', () => {
       const itemsObject = {
         key: { value: 1, expirationTimestampInMillis: 1 },
         key2: { value: 2, expirationTimestampInMillis: 2 },
-      }
+      };
 
       memoryCache.importItemsFrom(JSON.stringify(itemsObject));
       expect(memoryCache.getItemCount()).toBe(2);
