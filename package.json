@@ -1,6 +1,6 @@
 {
   "name": "memory-cache-node",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Fast, modern and event loop non-blocking memory cache for Node.js and browse",
   "author": {
     "name": "Petri Silen",
@@ -10,10 +10,24 @@
     "node": ">= 12.19"
   },
   "license": "MIT",
-  "main": "lib/index.js",
+  "main": "lib/MemoryCache.js",
+  "module": "lib/MemoryCache.esm.js",
+  "types": "lib/MemoryCache.d.js",
   "files": [
-    "lib"
+    "./lib/**/*.js",
+    "./lib/**/*.d.ts",
+    "package.json",
+    "LICENSE.MD",
+    "README.md"
   ],
+  "exports": {
+    ".": {
+      "types": "./lib/MemoryCache.d.ts",
+      "require": "./lib/MemoryCache.js",
+      "import": "./lib/MemoryCache.esm.js"
+    },
+    "./lib/*": "./lib/*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/pksilen/memory-cache-node.git"
@@ -30,14 +44,15 @@
     "prebuild": "rimraf lib",
     "lint": "eslint ./src --cache --fix --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
-    "build": "tsc",
+    "build": "rollup --config rollup.config.ts --configPlugin typescript",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "prepublishOnly": "npm run build && npm test",
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@types/jest": "^27.0.1",
+    "@rollup/plugin-typescript": "^11.1.2",
+    "@types/jest": "^27.5.2",
     "@types/node": "^16.7.13",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
     "@typescript-eslint/parser": "^4.31.0",
@@ -48,6 +63,8 @@
     "jest": "^27.1.1",
     "lint-staged": "^11.1.2",
     "prettier": "^2.3.2",
+    "rollup": "^3.26.1",
+    "rollup-plugin-dts": "^5.3.0",
     "ts-jest": "^27.0.5",
     "typescript": "^4.4.2"
   },

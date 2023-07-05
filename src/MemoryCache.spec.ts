@@ -1,5 +1,6 @@
 // noinspection MagicNumberJS
 
+import { afterEach, expect, jest, describe, it } from '@jest/globals';
 import MemoryCache from './MemoryCache';
 
 // noinspection DynamicallyGeneratedCodeJS

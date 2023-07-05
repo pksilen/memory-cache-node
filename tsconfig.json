@@ -1,19 +1,19 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "moduleResolution": "Node",
+    "module": "ES6",
+    "lib": [ "ES6" ],
     "declaration": true,
     "removeComments": true,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es2019",
-    "sourceMap": true,
+    "target": "ES6",
+    "sourceMap": false,
     "strict": true,
-    "outDir": "./lib",
-    "baseUrl": "./",
-    "incremental": true
+    "outDir": "./lib"
   },
 
   "include": ["src"],
-  "exclude": ["node_modules", "lib"]
+  "exclude": ["node_modules", "lib", "**/*.spec.ts", "src/index.ts"]
 }
