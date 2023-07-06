@@ -174,10 +174,10 @@ memoryCache.destroy()
 
 ## API Documentation
 
-```ts
-`K` is the type of the item key.
-`V` is the type of the item value.
+* `K` is the type of the item key.
+* `V` is the type of the item value.
   
+```ts
 class MemoryCache<K, V> {
   constructor(itemsExpirationCheckIntervalInSecs: number, maxItemCount: number);
   storePermanentItem(itemKey: K, itemValue: V): void;
