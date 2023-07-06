@@ -12,6 +12,7 @@
   "license": "MIT",
   "main": "lib/MemoryCache.js",
   "module": "lib/MemoryCache.esm.js",
+  "type": "module",
   "types": "lib/MemoryCache.d.js",
   "files": [
     "./lib/**/*.js",
