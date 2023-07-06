@@ -21,12 +21,12 @@ not block the event loop for a long time, if the cache is very large (hundreds o
 - [API Documentation](#api-documentation)
 - [License](#license)
 
-## <a name="installation"></a> Installation
+## Installation
 ```bash
 npm install --save memory-cache-node
 ```
 
-## <a name="usage"></a> Usage
+## Usage
 
 ### Creating a memory cache
 Below example creates a memory cache for items which has string keys and number values. 
@@ -172,7 +172,7 @@ const memoryCache = new MemoryCache<string, number>(600, 1000000);
 memoryCache.destroy()
 ```
 
-## <a name="api-documentation"></a> API Documentation
+## API Documentation
 
 ```ts
 `K` is the type of the item key.
@@ -201,7 +201,7 @@ class MemoryCache<K, V> {
 }
 ```
 
-## <a name="license"></a> License
+## License
 [MIT](https://github.com/pksilen/memory-cache-node/blob/main/LICENSE)
 
 [license-badge]: https://img.shields.io/badge/license-MIT-green
