@@ -28,7 +28,7 @@ npm install --save memory-cache-node
 
 ### Creating a memory cache
 Below example creates a memory cache for items which has string keys and number values. 
-Memory cache checks expiring items every 600 seconds (i.e. every 10 minutes) 
+Memory cache checks expiring items every 600 seconds (i.e. every 10 minutes). This value cannot be larger than 2147483,647 seconds because it is stored as a signed 32-bit int.
 The maximum number of items in the cache is 1 million.
 
 ```ts
